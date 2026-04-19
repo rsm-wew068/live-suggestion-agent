@@ -8,9 +8,17 @@ interface UseAudioRecorderReturn {
   stopRecording: () => void;
 }
 
+function getMimeType(): string {
+  if (typeof window === "undefined") return "audio/webm";
+  if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus"))
+    return "audio/webm;codecs=opus";
+  if (MediaRecorder.isTypeSupported("audio/webm")) return "audio/webm";
+  return "audio/mp4";
+}
+
 export function useAudioRecorder(
   onChunk: (blob: Blob) => void,
-  intervalMs: number = 10000
+  intervalMs: number = 30000
 ): UseAudioRecorderReturn {
   const [recording, setRecording] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
@@ -18,16 +26,11 @@ export function useAudioRecorder(
   const recorderRef = useRef<MediaRecorder | null>(null);
   const onChunkRef = useRef(onChunk);
   const stoppedRef = useRef(false);
+  const mimeTypeRef = useRef("audio/webm");
 
   useEffect(() => {
     onChunkRef.current = onChunk;
   }, [onChunk]);
-
-  const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-    ? "audio/webm;codecs=opus"
-    : MediaRecorder.isTypeSupported("audio/webm")
-      ? "audio/webm"
-      : "audio/mp4";
 
   const captureChunk = useCallback(() => {
     const recorder = recorderRef.current;
@@ -41,28 +44,30 @@ export function useAudioRecorder(
 
     recorder.onstop = () => {
       if (chunks.length > 0 && !stoppedRef.current) {
-        const blob = new Blob(chunks, { type: mimeType });
+        const blob = new Blob(chunks, { type: mimeTypeRef.current });
         onChunkRef.current(blob);
       }
-      // Immediately start a new recorder if still recording
       if (!stoppedRef.current && streamRef.current) {
         startNewRecorder();
       }
     };
 
     recorder.stop();
-  }, [mimeType]);
+  }, []);
 
   const startNewRecorder = useCallback(() => {
     if (!streamRef.current || stoppedRef.current) return;
 
-    const recorder = new MediaRecorder(streamRef.current, { mimeType });
+    const recorder = new MediaRecorder(streamRef.current, {
+      mimeType: mimeTypeRef.current,
+    });
     recorderRef.current = recorder;
     recorder.start();
-  }, [mimeType]);
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
+      mimeTypeRef.current = getMimeType();
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true },
       });
@@ -72,7 +77,6 @@ export function useAudioRecorder(
       startNewRecorder();
       setRecording(true);
 
-      // Every intervalMs, stop the current recorder (triggers captureChunk via onstop)
       timerRef.current = setInterval(captureChunk, intervalMs);
     } catch (err) {
       console.error("Failed to start recording:", err);
