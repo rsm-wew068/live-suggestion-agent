@@ -83,5 +83,5 @@ User question: {message}`,
 
   suggestionContextWindow: 3000,
   detailContextWindow: 8000,
-  refreshInterval: 10,
+  refreshInterval: 30,
 };
