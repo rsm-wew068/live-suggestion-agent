@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Settings, DEFAULT_SETTINGS } from "@/lib/types";
+import { Settings } from "@/lib/types";
+import { DEFAULT_SETTINGS } from "@/lib/prompts";
 import { useTranscription } from "@/hooks/useTranscript";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useSuggestions } from "@/hooks/useSuggestions";

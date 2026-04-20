@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { SuggestionBatch, TranscriptEntry, Settings } from "@/lib/types";
+import { SUGGESTION_SYSTEM_PROMPT } from "@/lib/prompts";
 import { formatTranscript } from "./useTranscript";
 
 function ts(): string {
@@ -60,8 +61,7 @@ export function useSuggestions(
             "x-api-key": settings.apiKey,
           },
           body: JSON.stringify({
-            systemPrompt:
-              "You are an AI meeting copilot. Generate suggestions as instructed. Always respond with valid JSON.",
+            systemPrompt: SUGGESTION_SYSTEM_PROMPT,
             userPrompt: finalUserPrompt,
           }),
         });

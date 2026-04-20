@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, DEFAULT_SETTINGS } from "@/lib/types";
+import { Settings } from "@/lib/types";
+import { DEFAULT_SETTINGS } from "@/lib/prompts";
 
 interface SettingsModalProps {
   settings: Settings;

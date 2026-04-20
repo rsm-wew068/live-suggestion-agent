@@ -120,12 +120,7 @@ export function useChat(
       ]);
 
       const context = formatTranscript(transcript, settings.detailContextWindow);
-      const systemPrompt = `You are an AI meeting copilot assisting during a live conversation. Answer the user's question using the transcript context below.
-
-Be concise but thorough. Reference specific things said in the conversation when relevant. If the question is about something not in the transcript, give your best general answer.
-
-Full transcript so far:
-${context}`;
+      const systemPrompt = settings.chatPrompt.replace("{transcript}", context);
 
       setStreaming(true);
       const safety = setTimeout(() => setStreaming(false), 90_000);
