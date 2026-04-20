@@ -19,6 +19,7 @@ Open http://localhost:3000. Click the **Settings** gear icon, paste your Groq AP
 | Styling | Custom CSS (no Tailwind utility classes) | Exact match to the reference prototype's design tokens |
 | Transcription | Groq Whisper Large V3 | Required — ultra-fast speech-to-text |
 | Suggestions/Chat | Groq GPT-OSS 120B | Required — fast LLM inference for real-time suggestions |
+| Markdown | react-markdown | Proper rendering of AI responses (tables, code, lists) |
 | Audio Capture | MediaRecorder API | Browser-native, no dependencies |
 | Deployment | Vercel | Free tier, zero-config for Next.js |
 
@@ -45,6 +46,7 @@ lib/
   constants.ts          # Shared TYPE_LABELS / TYPE_CLASSES
   stream.ts             # Client-side streaming fetch utility
   types.ts              # TypeScript interfaces
+  prompts.ts             # All prompt templates + DEFAULT_SETTINGS (single source of truth)
 hooks/
   useTranscript.ts      # Transcription state + formatTranscript helper
   useAudioRecorder.ts   # MediaRecorder hook with configurable chunk interval
