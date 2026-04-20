@@ -2,14 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { ChatMessage } from "@/lib/types";
-
-const TYPE_LABELS: Record<string, string> = {
-  QUESTION: "Question to ask",
-  TALKING_POINT: "Talking point",
-  ANSWER: "Answer",
-  FACT_CHECK: "Fact-check",
-  CLARIFICATION: "Clarification",
-};
+import { TYPE_LABELS } from "@/lib/constants";
 
 interface ChatPanelProps {
   messages: ChatMessage[];

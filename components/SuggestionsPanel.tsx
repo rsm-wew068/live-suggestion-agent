@@ -6,6 +6,7 @@ import SuggestionCard from "./SuggestionCard";
 interface SuggestionsPanelProps {
   batches: SuggestionBatch[];
   countdown: number;
+  loading?: boolean;
   onReload: () => void;
   onSuggestionClick: (batch: SuggestionBatch, index: number) => void;
 }
@@ -13,6 +14,7 @@ interface SuggestionsPanelProps {
 export default function SuggestionsPanel({
   batches,
   countdown,
+  loading,
   onReload,
   onSuggestionClick,
 }: SuggestionsPanelProps) {
@@ -25,8 +27,9 @@ export default function SuggestionsPanel({
         </span>
       </header>
       <div className="reload-row">
-        <button className="reload-btn" onClick={onReload}>
-          ↻ Reload suggestions
+        <button className="reload-btn" onClick={onReload} disabled={loading}>
+          <span className={loading ? "spin" : ""}>↻</span>{" "}
+          {loading ? "Loading…" : "Reload suggestions"}
         </button>
         <span className="countdown">auto-refresh in {countdown}s</span>
       </div>

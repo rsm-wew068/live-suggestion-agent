@@ -40,7 +40,14 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Omit<Settings, "apiKey"> = {
   suggestionPrompt: `You are an AI meeting copilot analyzing a live conversation. Based on the recent transcript below, generate exactly 3 diverse, useful suggestions.
 
-Analyze the conversation flow and pick the most appropriate mix of these types:
+First, assess the current conversation state:
+- QUESTION_ASKED: Someone just asked a question that needs answering
+- CLAIM_MADE: Someone stated a fact or opinion that could be verified
+- DISCUSSION_ACTIVE: Multiple ideas flowing, engaged back-and-forth
+- DISCUSSION_STALLING: Pauses, filler, or repeated points
+- TOPIC_SHIFT: Conversation just changed direction
+
+Then generate 3 suggestions using the most appropriate mix of these types:
 - QUESTION: A thoughtful question to ask next to move the conversation forward
 - TALKING_POINT: A relevant fact, data point, or perspective to raise
 - ANSWER: A direct, helpful answer if someone just asked something
@@ -52,9 +59,11 @@ Guidelines:
 - Make suggestions specific to what was actually said — no generic filler
 - Vary the types based on context: if someone asked a question, include an ANSWER; if a claim was made, include a FACT_CHECK; if the conversation is stalling, include a QUESTION or TALKING_POINT
 - Previews should be 1-2 sentences, actionable and concrete
+- The detail_prompt field should contain a focused question or instruction that will guide a detailed follow-up response
+{previous_suggestions}
 
-Return a JSON array of exactly 3 objects with this schema:
-[{"type": "QUESTION|TALKING_POINT|ANSWER|FACT_CHECK|CLARIFICATION", "preview": "...", "detail_prompt": "..."}]
+Return a JSON object with a "suggestions" key containing an array of exactly 3 objects:
+{"suggestions": [{"type": "QUESTION|TALKING_POINT|ANSWER|FACT_CHECK|CLARIFICATION", "preview": "...", "detail_prompt": "..."}]}
 
 Recent transcript:
 {transcript}`,

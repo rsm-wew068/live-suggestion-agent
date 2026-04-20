@@ -29,7 +29,8 @@ export async function transcribeAudio(
 
 export async function getSuggestions(
   apiKey: string,
-  prompt: string
+  systemPrompt: string,
+  userPrompt: string
 ): Promise<string> {
   const res = await fetch(`${GROQ_API_URL}/chat/completions`, {
     method: "POST",
@@ -39,7 +40,10 @@ export async function getSuggestions(
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
       temperature: 0.7,
       max_tokens: 1024,
       response_format: { type: "json_object" },
@@ -57,7 +61,7 @@ export async function getSuggestions(
 
 export async function streamChat(
   apiKey: string,
-  prompt: string
+  messages: Array<{ role: string; content: string }>
 ): Promise<ReadableStream<Uint8Array>> {
   const res = await fetch(`${GROQ_API_URL}/chat/completions`, {
     method: "POST",
@@ -67,7 +71,7 @@ export async function streamChat(
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      messages: [{ role: "user", content: prompt }],
+      messages,
       temperature: 0.7,
       max_tokens: 2048,
       stream: true,
@@ -85,32 +89,37 @@ export async function streamChat(
   const encoder = new TextEncoder();
   const reader = res.body.getReader();
 
-  return new ReadableStream({
-    async pull(controller) {
-      const { done, value } = await reader.read();
-      if (done) {
-        controller.close();
-        return;
-      }
+  // Process SSE eagerly and pipe content bytes
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n");
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith("data: ")) continue;
-        const data = trimmed.slice(6);
-        if (data === "[DONE]") continue;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith("data: ")) continue;
+            const data = trimmed.slice(6);
+            if (data === "[DONE]") continue;
 
-        try {
-          const parsed = JSON.parse(data);
-          const content = parsed.choices?.[0]?.delta?.content;
-          if (content) {
-            controller.enqueue(encoder.encode(content));
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) {
+                controller.enqueue(encoder.encode(content));
+              }
+            } catch {
+              // skip malformed JSON
+            }
           }
-        } catch {
-          // skip malformed JSON
         }
+        controller.close();
+      } catch (err) {
+        controller.error(err);
       }
     },
     cancel() {

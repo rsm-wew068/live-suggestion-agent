@@ -11,15 +11,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prompt } = await req.json();
-    if (!prompt || typeof prompt !== "string") {
+    const { messages } = await req.json();
+    if (!messages || !Array.isArray(messages)) {
       return new Response(
-        JSON.stringify({ error: "prompt required" }),
+        JSON.stringify({ error: "messages array required" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const stream = await streamChat(apiKey, prompt);
+    const stream = await streamChat(apiKey, messages);
 
     return new Response(stream, {
       headers: {

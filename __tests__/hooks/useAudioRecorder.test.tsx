@@ -20,7 +20,6 @@ class MockMediaRecorder {
 
   stop() {
     this.state = "inactive";
-    // Simulate ondataavailable + onstop
     if (this.ondataavailable) {
       this.ondataavailable({ data: new Blob(["audio-chunk"], { type: this.mimeType }) });
     }

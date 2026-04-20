@@ -8,15 +8,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prompt } = await req.json();
-    if (!prompt || typeof prompt !== "string") {
+    const { systemPrompt, userPrompt } = await req.json();
+    if (!userPrompt || typeof userPrompt !== "string") {
       return NextResponse.json(
-        { error: "Prompt required" },
+        { error: "userPrompt required" },
         { status: 400 }
       );
     }
 
-    const raw = await getSuggestions(apiKey, prompt);
+    const raw = await getSuggestions(
+      apiKey,
+      systemPrompt || "",
+      userPrompt
+    );
 
     let suggestions;
     try {
