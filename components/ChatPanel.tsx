@@ -1,38 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState } from "react";
+import ChatMarkdown from "react-markdown";
 import { ChatMessage } from "@/lib/types";
 import { TYPE_LABELS } from "@/lib/constants";
-
-function renderMarkdown(text: string): string {
-  return text
-    // Escape HTML
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    // Code blocks (```...```)
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
-    // Inline code
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    // Italic
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    // Headers
-    .replace(/^### (.+)$/gm, "<h4>$1</h4>")
-    .replace(/^## (.+)$/gm, "<h3>$1</h3>")
-    .replace(/^# (.+)$/gm, "<h3>$1</h3>")
-    // Unordered lists
-    .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
-    // Paragraphs — double newline
-    .replace(/\n\n/g, "</p><p>")
-    // Single newline within paragraph
-    .replace(/\n/g, "<br/>")
-    // Wrap in paragraph
-    .replace(/^(.+)$/, "<p>$1</p>");
-}
 
 interface ChatPanelProps {
   messages: ChatMessage[];
@@ -82,13 +53,17 @@ export default function ChatPanel({
                   : "You"
                 : "Assistant"}
             </div>
-            <div
-              className="bubble"
-              {...(msg.role === "assistant" && msg.content
-                ? { dangerouslySetInnerHTML: { __html: renderMarkdown(msg.content) + (streaming && msg === messages[messages.length - 1] ? '<span class="cursor-blink">▊</span>' : '') } }
-                : {})}
-            >
-              {msg.role === "user" || !msg.content ? msg.content : null}
+            <div className="bubble">
+              {msg.role === "assistant" && msg.content ? (
+                <ChatMarkdown>{msg.content}</ChatMarkdown>
+              ) : (
+                msg.content
+              )}
+              {streaming &&
+                msg === messages[messages.length - 1] &&
+                msg.role === "assistant" && (
+                  <span className="cursor-blink">▊</span>
+                )}
             </div>
           </div>
         ))}
