@@ -1,4 +1,4 @@
-# TwinMind — Live Suggestions
+# Live Suggestions
 
 A web app that listens to live audio from the user's mic and continuously surfaces 3 useful AI-powered suggestions based on what is being said. Clicking a suggestion opens a detailed answer in a chat panel.
 
