@@ -1,5 +1,7 @@
 # Live Suggestions
 
+**Live demo:** https://twinmind-live-suggestion-liart.vercel.app/
+
 A web app that listens to live audio from the user's mic and continuously surfaces 3 useful AI-powered suggestions based on what is being said. Clicking a suggestion opens a detailed answer in a chat panel.
 
 ## Quick Start
@@ -131,8 +133,6 @@ npm test    # 43 tests across 8 suites (Jest + React Testing Library)
 Covers: API routes (suggest, chat, transcribe), components (SuggestionCard, ChatPanel, ExportButton), hooks (useAudioRecorder), and lib (groq client).
 
 ## Deployment
-
-**Live URL:** https://twinmind-live-suggestion-liart.vercel.app/
 
 ```bash
 npx vercel
