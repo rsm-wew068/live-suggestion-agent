@@ -132,6 +132,8 @@ Covers: API routes (suggest, chat, transcribe), components (SuggestionCard, Chat
 
 ## Deployment
 
+**Live URL:** https://twinmind-live-suggestion-liart.vercel.app/
+
 ```bash
 npx vercel
 ```
