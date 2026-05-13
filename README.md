@@ -1,6 +1,6 @@
-# Live Suggestions
+# Live Suggestion Agent
 
-**Live demo:** https://twinmind-live-suggestion-liart.vercel.app/
+[![Try Live](https://img.shields.io/badge/🚀_Try_Live_Suggestion_Agent-06b6d4)](https://twinmind-live-suggestion-liart.vercel.app)
 
 A web app that listens to live audio from the user's mic and continuously surfaces 3 useful AI-powered suggestions based on what is being said. Clicking a suggestion opens a detailed answer in a chat panel.
 
